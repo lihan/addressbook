@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Address Book</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Address Book</h1>
+            <p>Please click the button below to upload your CSV file</p>
+            <p>
+                <form action="/import/csv" method="post" enctype="multipart/form-data">
+                    <label class="btn btn-success btn-file">
+                        Upload CSV<input type="file" name="file" onchange="this.form.submit()" style="display: none;"/>
+                    </label>
+                </form>
+            </p>
+        </div>
+        {% if saved_count %}
+		<div class="row">
+			<div class="alert alert-success" role="alert">{{ saved_count }} contacts have been added to your address book</div>
+		</div>
+        {% endif %}
+        {% for error in errors %}
+        <div class="row">
+			<div class="alert alert-danger" role="alert">{{ error }}</div>
+		</div>
+        {% endfor %}
+        {% if unsaved %}
+        <div class="row">
+            <form action="/import/bulk" method="post" enctype="multipart/form-data">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">Action required: duplicate records</div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Overwrite existing record</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for address in unsaved %}
+                            <tr>
+                                <td>{{ address.name }}<input name="name" type="text" value="{{ address.name }}" style="display: none;"></td>
+                                <td>{{ address.email }}<input name="email" type="text" value="{{ address.email }}" style="display: none;"></td>
+                                <td><input name="{{ address.email }}_overwrite" type="checkbox"></td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td><input type="submit" value="Save" class="btn btn-primary"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">Contact List</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for address in addresses %}
+                        <tr>
+                            <td>{{address.name}}</td>
+                            <td>{{address.email}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+</html>
